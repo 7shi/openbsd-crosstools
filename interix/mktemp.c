@@ -47,6 +47,7 @@
 
 static int _gettemp(char *, int *, int, int);
 
+#if 0
 int
 mkstemps(char *path, int slen)
 {
@@ -54,6 +55,7 @@ mkstemps(char *path, int slen)
 
 	return (_gettemp(path, &fd, 0, slen) ? fd : -1);
 }
+#endif
 
 int
 mkstemp(char *path)

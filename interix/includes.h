@@ -38,7 +38,7 @@
 /* OpenBSD function replacements */
 
 #if !defined(HAVE_MKDTEMP) || defined(HAVE_STRICT_MKSTEMP)
-int mkstemps(char *path, int slen);
+/*int mkstemps(char *path, int slen);*/
 int mkstemp(char *path);
 char *mkdtemp(char *path);
 #endif 
