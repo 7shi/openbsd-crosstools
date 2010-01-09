@@ -90,10 +90,10 @@ CTAGS?=		/usr/bin/ctags
 	${LINK.c} -o ${.TARGET} ${.IMPSRC} ${LDLIBS}
 .c.o:
 	${COMPILE.c} ${.IMPSRC}
-.c.a:
-	${COMPILE.c} ${.IMPSRC}
-	${AR} ${ARFLAGS} $@ $*.o
-	rm -f $*.o
+#.c.a:
+#	${COMPILE.c} ${.IMPSRC}
+#	${AR} ${ARFLAGS} $@ $*.o
+#	rm -f $*.o
 .c.ln:
 	${LINT} ${LINTFLAGS} ${CFLAGS:M-[IDU]*} ${CPPFLAGS:M-[IDU]*} -i ${.IMPSRC}
 
