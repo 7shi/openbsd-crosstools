@@ -49,7 +49,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "config.h"
-#include "y.tab.h"
+#include "gram.h"
 
 int	yyline;
 const char *yyfile;

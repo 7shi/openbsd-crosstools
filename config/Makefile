@@ -20,11 +20,11 @@ $(TARGET): $(OBJECTS)
 .c.o:
 	$(CC) -c -o $@ $(CPPFLAGS) $<
 
-scan.c: scan.l
-	flex -o $@ $<
-
 gram.c gram.h: gram.y
-	bison -o $@ -d $<
+	bison -o $@ -y -d $<
+
+scan.c: scan.l gram.c
+	lex -o $@ $<
 
 install: $(TARGET)
 	mkdir -p $(DESTDIR)/bin

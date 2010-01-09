@@ -21,7 +21,7 @@ et_lex.lex.c: et_lex.lex.l
 compile_et.c: error_table.c
 
 error_table.c error_table.h: error_table.y
-	bison -o $@ -d $<
+	bison -o $@ -y -d $<
 
 install: $(TARGET)
 	mkdir -p $(DESTDIR)/bin
