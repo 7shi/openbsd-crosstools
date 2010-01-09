@@ -1,4 +1,4 @@
-TARGET  = config
+TARGET  = ../bin/config
 SOURCES = files.c gram.c hash.c main.c mkheaders.c mkioconf.c mkmakefile.c \
 	mkswap.c pack.c scan.c sem.c util.c \
 	ukc.c misc.c ukcutil.c cmd.c exec.c exec_elf.c
@@ -13,6 +13,7 @@ all: $(TARGET)
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
+	mkdir -p ../bin
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 

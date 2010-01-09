@@ -1,4 +1,4 @@
-TARGET  = compile_et
+TARGET  = ../bin/compile_et
 SOURCES = compile_et.c error_table.c et_lex.lex.c
 
 include ../config.mk
@@ -8,6 +8,7 @@ all: $(TARGET)
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
+	mkdir -p ../bin
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 

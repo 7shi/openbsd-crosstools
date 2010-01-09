@@ -1,4 +1,4 @@
-TARGET  = readlink
+TARGET  = ../bin/readlink
 SOURCES = readlink.c
 
 include ../config.mk
@@ -8,6 +8,7 @@ all: $(TARGET)
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
+	mkdir -p ../bin
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 

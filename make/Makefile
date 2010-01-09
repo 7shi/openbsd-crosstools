@@ -4,7 +4,7 @@ include ../config.mk
 
 HOSTCC=${CC}
 
-PROG=	make
+PROG=	../bin/make
 #CFLAGS+= -I${.OBJDIR} -I${.CURDIR}
 #HOSTCFLAGS+= -I${.OBJDIR} -I${.CURDIR}
 CFLAGS+= --std=c99 -I. ${CPPFLAGS} -DDESTDIR="\"${DESTDIR}\""
@@ -33,6 +33,7 @@ OBJS=${SRCS:.c=.o}
 
 all: ${PROG}
 ${PROG}: ${OBJS}
+	mkdir -p ../bin
 	${CC} -o $@ ${CDIAGFLAGS} ${CFLAGS} ${OBJS} ${LDFLAGS}
 	${STRIP} $@
 .c.o:

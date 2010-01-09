@@ -1,4 +1,4 @@
-TARGET  = rpcgen
+TARGET  = ../bin/rpcgen
 SOURCES = rpc_clntout.c rpc_cout.c rpc_hout.c rpc_main.c rpc_parse.c rpc_scan.c \
 	rpc_svcout.c rpc_util.c rpc_sample.c rpc_tblout.c
 
@@ -9,6 +9,7 @@ all: $(TARGET)
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
+	mkdir -p ../bin
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 

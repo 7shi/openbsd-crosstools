@@ -1,4 +1,4 @@
-TARGET  = mtree
+TARGET  = ../bin/mtree
 SOURCES = compare.c crc.c create.c misc.c mtree.c spec.c verify.c
 
 include ../config.mk
@@ -8,6 +8,7 @@ all: $(TARGET)
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
+	mkdir -p ../bin
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 
