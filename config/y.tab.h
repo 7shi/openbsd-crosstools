@@ -1,0 +1,47 @@
+#define AND 257
+#define AT 258
+#define ATTACH 259
+#define BUILD 260
+#define COMPILE_WITH 261
+#define LINT_WITH 262
+#define CONFIG 263
+#define DEFINE 264
+#define DEFOPT 265
+#define DEVICE 266
+#define DISABLE 267
+#define DUMPS 268
+#define ENDFILE 269
+#define XFILE 270
+#define XOBJECT 271
+#define FLAGS 272
+#define INCLUDE 273
+#define XMACHINE 274
+#define MAJOR 275
+#define MAKEOPTIONS 276
+#define MAXUSERS 277
+#define MAXPARTITIONS 278
+#define MINOR 279
+#define ON 280
+#define OPTIONS 281
+#define PSEUDO_DEVICE 282
+#define ROOT 283
+#define SOURCE 284
+#define SWAP 285
+#define WITH 286
+#define NEEDS_COUNT 287
+#define NEEDS_FLAG 288
+#define RMOPTIONS 289
+#define ENABLE 290
+#define NUMBER 291
+#define PATHNAME 292
+#define WORD 293
+#define EMPTY 294
+typedef union {
+	struct	attr *attr;
+	struct	devbase *devb;
+	struct	deva *deva;
+	struct	nvlist *list;
+	const char *str;
+	int	val;
+} YYSTYPE;
+extern YYSTYPE yylval;
