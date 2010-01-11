@@ -207,7 +207,7 @@ diff -ur src.orig/Makefile.cross src/Makefile.cross
 +	chmod 755 $@
 diff -ur src.orig/gnu/usr.bin/binutils/Makefile.bsd-wrapper src/gnu/usr.bin/binutils/Makefile.bsd-wrapper
 --- src.orig/gnu/usr.bin/binutils/Makefile.bsd-wrapper	2010-01-11 23:13:01.000000000 +0900
-+++ src/gnu/usr.bin/binutils/Makefile.bsd-wrapper	2010-01-11 23:41:09.000000000 +0900
++++ src/gnu/usr.bin/binutils/Makefile.bsd-wrapper	2010-01-12 01:32:35.000000000 +0900
 @@ -20,7 +20,7 @@
  MANDIR=${PREFIX}/share/man/cat
  .endif
@@ -235,16 +235,17 @@ diff -ur src.orig/gnu/usr.bin/binutils/Makefile.bsd-wrapper src/gnu/usr.bin/binu
  .else
  CONFIGTARGET=
  .endif
-@@ -73,7 +73,7 @@
+@@ -70,6 +70,9 @@
+ 	    ALL_MODULES="${ALL_MODULES}" \
+ 	    ALL_HOST_MODULES='${ALL_HOST_MODULES}' \
+ 	    INFO_HOST_MODULES='${INFO_HOST_MODULES}' all info
++	cd ${.OBJDIR}/binutils && \
++	    ${MAKE} CC="${CC}" CFLAGS="${CFLAGS} ${COPTS}" \
++	    LDFLAGS=${LDSTATIC} size
  .if ${USING_NEW_BINUTILS:L} != "yes"
  	cd ${.OBJDIR}/binutils && \
  	    ${MAKE} CC="${CC}" CFLAGS="${CFLAGS} ${COPTS}" \
--	    LDFLAGS=${LDSTATIC} objdump
-+	    LDFLAGS=${LDSTATIC} objdump size
- .endif
- 
- .include <bsd.own.mk>
-@@ -85,7 +85,7 @@
+@@ -85,7 +88,7 @@
  .endif
  
  do-config: .USE
@@ -253,15 +254,16 @@ diff -ur src.orig/gnu/usr.bin/binutils/Makefile.bsd-wrapper src/gnu/usr.bin/binu
  	MAKEINFO='makeinfo --no-split' \
  	sh ${.CURDIR}/configure --prefix=${PREFIX} \
  	    --infodir='$${prefix}/share/info' \
-@@ -124,7 +124,7 @@
+@@ -121,6 +124,9 @@
+ 	    INSTALL_PROGRAM='install -c -S' \
+ 	    INSTALL_INFO_HOST_MODULES='${INSTALL_INFO_HOST_MODULES}' \
+ 	      install install-info
++	cd ${.OBJDIR}/binutils && \
++		${INSTALL} ${INSTALL_COPY} ${INSTALL_STRIP} -o ${BINOWN} \
++		    -g ${BINGRP} -m ${BINMODE} size ${DESTDIR}${PREFIX}/bin
  .if ${USING_NEW_BINUTILS:L} != "yes"
  	cd ${.OBJDIR}/binutils && \
  		${INSTALL} ${INSTALL_COPY} ${INSTALL_STRIP} -o ${BINOWN} \
--		    -g ${BINGRP} -m ${BINMODE} objdump ${DESTDIR}${PREFIX}/bin
-+		    -g ${BINGRP} -m ${BINMODE} objdump size ${DESTDIR}${PREFIX}/bin
- .endif
- 
- clean cleandir:
 diff -ur src.orig/gnu/usr.bin/gcc/Makefile.bsd-wrapper src/gnu/usr.bin/gcc/Makefile.bsd-wrapper
 --- src.orig/gnu/usr.bin/gcc/Makefile.bsd-wrapper	2010-01-11 23:13:14.000000000 +0900
 +++ src/gnu/usr.bin/gcc/Makefile.bsd-wrapper	2010-01-11 23:41:32.000000000 +0900

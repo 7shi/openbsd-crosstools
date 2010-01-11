@@ -70,10 +70,13 @@ all:	config.status
 	    ALL_MODULES="${ALL_MODULES}" \
 	    ALL_HOST_MODULES='${ALL_HOST_MODULES}' \
 	    INFO_HOST_MODULES='${INFO_HOST_MODULES}' all info
+	cd ${.OBJDIR}/binutils && \
+	    ${MAKE} CC="${CC}" CFLAGS="${CFLAGS} ${COPTS}" \
+	    LDFLAGS=${LDSTATIC} size
 .if ${USING_NEW_BINUTILS:L} != "yes"
 	cd ${.OBJDIR}/binutils && \
 	    ${MAKE} CC="${CC}" CFLAGS="${CFLAGS} ${COPTS}" \
-	    LDFLAGS=${LDSTATIC} objdump size
+	    LDFLAGS=${LDSTATIC} objdump
 .endif
 
 .include <bsd.own.mk>
@@ -121,10 +124,13 @@ install: maninstall
 	    INSTALL_PROGRAM='install -c -S' \
 	    INSTALL_INFO_HOST_MODULES='${INSTALL_INFO_HOST_MODULES}' \
 	      install install-info
+	cd ${.OBJDIR}/binutils && \
+		${INSTALL} ${INSTALL_COPY} ${INSTALL_STRIP} -o ${BINOWN} \
+		    -g ${BINGRP} -m ${BINMODE} size ${DESTDIR}${PREFIX}/bin
 .if ${USING_NEW_BINUTILS:L} != "yes"
 	cd ${.OBJDIR}/binutils && \
 		${INSTALL} ${INSTALL_COPY} ${INSTALL_STRIP} -o ${BINOWN} \
-		    -g ${BINGRP} -m ${BINMODE} objdump size ${DESTDIR}${PREFIX}/bin
+		    -g ${BINGRP} -m ${BINMODE} objdump ${DESTDIR}${PREFIX}/bin
 .endif
 
 clean cleandir:
