@@ -11,9 +11,8 @@ RANLIB = ranlib
 STRIP  = strip
 
 CPPFLAGS = -I$(INCDIR)
-LDFLAGS  = -L$(LIBDIR)
+LDFLAGS  = -L$(LIBDIR) -lobcompat
 
 # Interix
 CC = gcc
-CPPFLAGS += -I$(SRCROOT)/interix/include -D_ALL_SOURCE -DREPLACE_GETOPT
-LDFLAGS  += -lcompat
+CPPFLAGS += -I$(SRCROOT)/include/interix -D_ALL_SOURCE -DREPLACE_GETOPT

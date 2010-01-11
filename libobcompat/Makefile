@@ -1,4 +1,4 @@
-TARGET  = $(LIBDIR)/libcompat.a
+TARGET  = $(LIBDIR)/libobcompat.a
 SOURCES = bsd-asprintf.c getopt_long.c mktemp.c nlist.c strtoll.c strtonum.c
 
 SRCROOT = ..

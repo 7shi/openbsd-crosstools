@@ -10,7 +10,7 @@ src/Makefile:
 
 $(TARGET): src/Makefile
 	cd src && $(MAKE)
-	cp src/libiberty.a $(LIBDIR)
+	$(AR) cvrus $@ src/*.o ../libobcompat/mktemp.o
 
 install: $(TARGET)
 	mkdir -p $(PREFIX)/lib

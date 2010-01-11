@@ -1,6 +1,6 @@
 include config.mk
 
-SUBDIRS = interix \
+SUBDIRS = libobcompat \
 	make mkdep libkvm config mtree readlink \
 	rpcgen compile_et chown xinstall libiberty
 
