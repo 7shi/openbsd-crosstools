@@ -1,14 +1,6 @@
 diff -ur src.orig/Makefile.cross src/Makefile.cross
 --- src.orig/Makefile.cross	2010-01-11 23:13:31.000000000 +0900
-+++ src/Makefile.cross	2010-01-11 23:39:35.000000000 +0900
-@@ -1,6 +1,6 @@
- # $OpenBSD: Makefile.cross,v 1.28 2009/09/21 19:44:23 matthieu Exp $
- 
--cross-tools:	cross-includes cross-binutils cross-gcc cross-lib
-+cross-tools:	cross-includes cross-binutils cross-gcc #cross-lib
- cross-distrib:	cross-tools cross-bin cross-share cross-sys cross-etc-root-var
- # cross-gnu \
- 
++++ src/Makefile.cross	2010-01-12 00:10:35.000000000 +0900
 @@ -18,6 +18,9 @@
  TARGET_ARCH=	m88k
  .elif	(${TARGET} == "sgi")

@@ -1,0 +1,10 @@
+Makefile
+config.h
+config.log
+config.status
+libiberty.a
+needed-list
+required-list
+stamp-h
+stamp-picdir
+xhost-mkfrag

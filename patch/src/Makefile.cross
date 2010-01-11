@@ -1,6 +1,6 @@
 # $OpenBSD: Makefile.cross,v 1.28 2009/09/21 19:44:23 matthieu Exp $
 
-cross-tools:	cross-includes cross-binutils cross-gcc #cross-lib
+cross-tools:	cross-includes cross-binutils cross-gcc cross-lib
 cross-distrib:	cross-tools cross-bin cross-share cross-sys cross-etc-root-var
 # cross-gnu \
 
