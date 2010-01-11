@@ -1,14 +1,15 @@
-TARGET  = ../bin/compile_et
+TARGET  = $(BINDIR)/compile_et
 SOURCES = compile_et.c error_table.c et_lex.lex.c
 
-include ../config.mk
+SRCROOT = ..
+include $(SRCROOT)/config.mk
 
 all: $(TARGET)
 
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
-	mkdir -p ../bin
+	mkdir -p $(BINDIR)
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 

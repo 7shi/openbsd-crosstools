@@ -44,7 +44,6 @@
 #endif /* !_PATH_OBJDIR */
 #ifndef _PATH_OBJDIRPREFIX
 /*#define _PATH_OBJDIRPREFIX	"/usr/obj"*/
-#define _PATH_OBJDIRPREFIX	DESTDIR"/obj"
 #endif /* !_PATH_OBJDIRPREFIX */
 #ifndef _PATH_DEFSHELLDIR
 #define _PATH_DEFSHELLDIR	"/bin"
@@ -54,5 +53,4 @@
 #endif /* ! _PATH_DEFSYSMK */
 #ifndef _PATH_DEFSYSPATH
 /*#define _PATH_DEFSYSPATH	"/usr/share/mk"*/
-#define _PATH_DEFSYSPATH	DESTDIR"/share/mk"
 #endif /* ! _PATH_DEFSYSPATH */

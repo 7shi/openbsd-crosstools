@@ -1,14 +1,15 @@
-TARGET  = ../bin/mtree
+TARGET  = $(BINDIR)/mtree
 SOURCES = compare.c crc.c create.c misc.c mtree.c spec.c verify.c
 
-include ../config.mk
+SRCROOT = ..
+include $(SRCROOT)/config.mk
 
 all: $(TARGET)
 
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
-	mkdir -p ../bin
+	mkdir -p $(BINDIR)
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 

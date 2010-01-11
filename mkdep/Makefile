@@ -1,4 +1,5 @@
-include ../config.mk
+SRCROOT = ..
+include $(SRCROOT)/config.mk
 
 all clean:
 

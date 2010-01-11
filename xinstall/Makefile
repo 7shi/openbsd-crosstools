@@ -1,7 +1,8 @@
-TARGET  = ../bin/install
+TARGET  = $(BINDIR)/install
 SOURCES = xinstall.c
 
-include ../config.mk
+SRCROOT = ..
+include $(SRCROOT)/config.mk
 
 CPPFLAGS += -DIGNORE_OWNER
 
@@ -10,7 +11,7 @@ all: $(TARGET)
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
-	mkdir -p ../bin
+	mkdir -p $(BINDIR)
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 

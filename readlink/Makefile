@@ -1,14 +1,15 @@
-TARGET  = ../bin/readlink
+TARGET  = $(BINDIR)/readlink
 SOURCES = readlink.c
 
-include ../config.mk
+SRCROOT = ..
+include $(SRCROOT)/config.mk
 
 all: $(TARGET)
 
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
-	mkdir -p ../bin
+	mkdir -p $(BINDIR)
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 

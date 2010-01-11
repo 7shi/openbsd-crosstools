@@ -1,9 +1,10 @@
-TARGET  = ../bin/config
+TARGET  = $(BINDIR)/config
 SOURCES = files.c gram.c hash.c main.c mkheaders.c mkioconf.c mkmakefile.c \
 	mkswap.c pack.c scan.c sem.c util.c \
 	ukc.c misc.c ukcutil.c cmd.c exec.c exec_elf.c
 
-include ../config.mk
+SRCROOT = ..
+include $(SRCROOT)/config.mk
 
 CPPFLAGS += -Iinclude -D__BSD_VISIBLE=1
 LDFLAGS  += -lkvm -ldb
@@ -13,7 +14,7 @@ all: $(TARGET)
 OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
-	mkdir -p ../bin
+	mkdir -p $(BINDIR)
 	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 	$(STRIP) $@
 
@@ -29,6 +30,8 @@ scan.c: scan.l gram.c
 install: $(TARGET)
 	mkdir -p $(DESTDIR)/bin
 	cp $(TARGET) $(DESTDIR)/bin
+	rm -f $(PREFIX)/bin/obconfig
+	ln -s $(DESTDIR)/bin/config $(PREFIX)/bin/obconfig
 
 clean:
 	rm -f $(TARGET) $(OBJECTS) scan.c gram.c gram.h
