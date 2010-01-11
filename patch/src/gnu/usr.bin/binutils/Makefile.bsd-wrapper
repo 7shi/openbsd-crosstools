@@ -85,7 +85,7 @@ CF=
 .endif
 
 do-config: .USE
-	PATH="/usr/local/i386-openbsd/bin:/bin:/usr/bin:/sbin:/usr/sbin" \
+	PATH="/usr/local/openbsd/bin:/bin:/usr/bin:/sbin:/usr/sbin" \
 	MAKEINFO='makeinfo --no-split' \
 	sh ${.CURDIR}/configure --prefix=${PREFIX} \
 	    --infodir='$${prefix}/share/info' \

@@ -1,0 +1,324 @@
+diff -ur src.orig/Makefile.cross src/Makefile.cross
+--- src.orig/Makefile.cross	2010-01-11 23:13:31.000000000 +0900
++++ src/Makefile.cross	2010-01-11 23:39:35.000000000 +0900
+@@ -1,6 +1,6 @@
+ # $OpenBSD: Makefile.cross,v 1.28 2009/09/21 19:44:23 matthieu Exp $
+ 
+-cross-tools:	cross-includes cross-binutils cross-gcc cross-lib
++cross-tools:	cross-includes cross-binutils cross-gcc #cross-lib
+ cross-distrib:	cross-tools cross-bin cross-share cross-sys cross-etc-root-var
+ # cross-gnu \
+ 
+@@ -18,6 +18,9 @@
+ TARGET_ARCH=	m88k
+ .elif	(${TARGET} == "sgi")
+ TARGET_ARCH=	mips64
++.elif	(${TARGET} == "loongson")
++TARGET_ARCH=	mips64
++TARGET_ENDIAN=	el
+ .elif	(${TARGET} == "solbourne")
+ TARGET_ARCH=	sparc
+ .elif	(${TARGET} == "macppc" || ${TARGET} == "mvmeppc" || \
+@@ -28,6 +31,7 @@
+ .else
+ TARGET_ARCH=	${TARGET}
+ .endif
++TARGET_ENDIAN?=
+ 
+ #CROSSCPPFLAGS?=	-nostdinc -I${CROSSDIR}/usr/include
+ #CROSSLDFLAGS?=	-nostdlib -L${CROSSDIR}/usr/lib -static
+@@ -50,6 +54,7 @@
+ 		OBJCOPY=${CROSSDIR}/usr/${TARGET_CANON}/bin/objcopy \
+ 		LORDER=/usr/bin/lorder RANLIB=${CROSSDIR}/usr/${TARGET_CANON}/bin/ranlib \
+ 		STRIP=${CROSSDIR}/usr/${TARGET_CANON}/bin/strip \
++		SIZE=${CROSSDIR}/usr/${TARGET_CANON}/bin/size \
+ 		HOSTCC=\"${CC}\" HOSTCXX=\"${CXX}\" NOMAN= \
+ 		HOSTCFLAGS=\"${CFLAGS}\" HOSTCXXFLAGS=\"${CXXFLAGS}\" \
+ 		HOSTLDFLAGS=\"${LDFLAGS}\" \
+@@ -57,7 +62,7 @@
+ 		CXXFLAGS=\"${CROSSCXXFLAGS}\" \
+ 		LDFLAGS=\"${CROSSLDFLAGS}\"
+ CROSSADDPATH=:${CROSSDIR}/usr/${TARGET_CANON}/bin
+-CROSSPATH=	/usr/bin:/bin:/usr/sbin:/sbin${CROSSADDPATH}
++CROSSPATH=	/usr/local/openbsd/bin:/usr/bin:/bin:/usr/sbin:/sbin${CROSSADDPATH}
+ CROSSLANGS?=	c c++
+ 
+ TARGET_CANON=`cat ${CROSSDIR}/TARGET_CANON`
+@@ -90,6 +95,7 @@
+ cross-env:
+ 	@echo ${CROSSENV} MACHINE=${TARGET} \
+ 	    MACHINE_ARCH=`cat ${CROSSDIR}/TARGET_ARCH` \
++	    MACHINE_ENDIAN=`cat ${CROSSDIR}/TARGET_ENDIAN` \
+ 	    BSDOBJDIR=${CROSSDIR}/usr/obj \
+ 	    BSDSRCDIR=${.CURDIR} MAKEOBJDIR=obj.${MACHINE}.${TARGET}
+ 
+@@ -97,8 +103,10 @@
+ 	@-mkdir -p ${CROSSDIR}
+ 	@echo ${TARGET_ARCH} > ${CROSSDIR}/TARGET_ARCH
+ 	@echo TARGET_ARCH is `cat ${CROSSDIR}/TARGET_ARCH`
++	@echo ${TARGET_ENDIAN} > ${CROSSDIR}/TARGET_ENDIAN
++	@echo TARGET_ENDIAN is `cat ${CROSSDIR}/TARGET_ENDIAN`
+ 	@eval `grep '^osr=' sys/conf/newvers.sh`; \
+-	   sed "s/\$$/-unknown-openbsd$$osr/" ${CROSSDIR}/TARGET_ARCH > \
++	   echo ${TARGET_ARCH}${TARGET_ENDIAN}-unknown-openbsd$$osr > \
+ 	   ${CROSSDIR}/TARGET_CANON
+ 	@-mkdir -p ${CROSSDIR}
+ 	@-mkdir -p ${CROSSDIR}/usr/${TARGET_CANON}
+@@ -116,6 +124,7 @@
+ 	    BSDOBJDIR=${CROSSDIR}/usr/obj \
+ 	    MACHINE=${TARGET} \
+ 	    MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN} \
+ 	    BSDSRCDIR=${.CURDIR} MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+ 	    ${MAKE} obj)
+ 	@touch ${CROSSOBJ}
+@@ -124,12 +133,16 @@
+ 	@-mkdir -p ${CROSSDIR}/usr/include
+ 	@(cd ${.CURDIR}/include && \
+ 	    MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN} \
+ 	    MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+ 	    TARGET_ARCH=${TARGET_ARCH} \
++	    TARGET_ENDIAN=${TARGET_ENDIAN} \
+ 	    ${MAKE} prereq && \
+ 	    MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN} \
+ 	    MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+ 	    TARGET_ARCH=${TARGET_ARCH} \
++	    TARGET_ENDIAN=${TARGET_ENDIAN} \
+ 	    ${MAKE} DESTDIR=${CROSSDIR} includes)
+ 	@touch ${CROSSINCLUDES}
+ 
+@@ -147,11 +160,13 @@
+ 	(cd ${.CURDIR}/gnu/usr.bin/binutils; \
+ 	    MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+ 	    USING_NEW_BINUTILS=${NEW_BINUTILS} \
+-	    TARGET_ARCH=${TARGET_ARCH} PATH=${CROSSPATH} \
++	    TARGET_ARCH=${TARGET_ARCH} \
++	    TARGET_ENDIAN=${TARGET_ENDIAN} PATH=${CROSSPATH} \
+ 	    ${MAKE} -f Makefile.bsd-wrapper depend && \
+ 	    MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+ 	    USING_NEW_BINUTILS=${NEW_BINUTILS} \
+ 	    TARGET_ARCH=${TARGET_ARCH} \
++	    TARGET_ENDIAN=${TARGET_ENDIAN} \
+ 	    ${MAKE} -f Makefile.bsd-wrapper all && \
+ 	    DESTDIR=${CROSSDIR} MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+ 	    USING_NEW_BINUTILS=${NEW_BINUTILS} \
+@@ -232,10 +247,12 @@
+ .if ${TARGET_USE_GCC3:L} == "yes"
+ 	(cd ${.CURDIR}/gnu/usr.bin/gcc; \
+ 	    MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+-	    TARGET_ARCH=${TARGET_ARCH} CROSSDIR=${CROSSDIR} \
++	    TARGET_ARCH=${TARGET_ARCH} \
++	    TARGET_ENDIAN=${TARGET_ENDIAN} CROSSDIR=${CROSSDIR} \
+ 	    PATH=${CROSSPATH} ${MAKE} -f Makefile.bsd-wrapper depend && \
+ 	    MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+-	    TARGET_ARCH=${TARGET_ARCH} CROSSDIR=${CROSSDIR} \
++	    TARGET_ARCH=${TARGET_ARCH} \
++	    TARGET_ENDIAN=${TARGET_ENDIAN} CROSSDIR=${CROSSDIR} \
+ 	    ${MAKE} -f Makefile.bsd-wrapper all && \
+ 	    env CROSSDIR=${CROSSDIR} DESTDIR=${CROSSDIR} MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+ 	    PATH=${CROSSPATH} ${MAKE} -f Makefile.bsd-wrapper install)
+@@ -290,8 +307,9 @@
+ 
+ # XXX MAKEOBJDIR maybe should be obj.${TARGET} here, revisit later
+ cross-lib:	${CROSSGCC}
+-	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH}; \
+-	export MACHINE MACHINE_ARCH; \
++	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN}; \
++	export MACHINE MACHINE_ARCH MACHINE_ENDIAN; \
+ 	(cd ${.CURDIR}/lib; \
+ 	    for lib in csu libc; do \
+ 	    (cd $$lib; \
+@@ -308,11 +326,12 @@
+ 	        ${MAKE} WANTLINT=no install)
+ 
+ cross-bin:	${CROSSOBJ}
+-	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH}; \
+-	export MACHINE MACHINE_ARCH; \
++	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN}; \
++	export MACHINE MACHINE_ARCH MACHINE_ENDIAN; \
+ 	for i in libexec bin sbin usr.bin usr.sbin; do \
+ 	(cd ${.CURDIR}/$$i; \
+-	    eval ${CROSSENV} MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
++	    eval ${CROSSENV} MAKEOBJDIR=obj.${MACHINE}.${TARGET} DESTDIR=${CROSSDIR} \
+ 	        SKIPDIR=\"${BINUTILS} ${NO_CROSS}\" \
+ 	        ${MAKE} depend all ; \
+ 	    eval ${CROSSENV} MAKEOBJDIR=obj.${MACHINE}.${TARGET} DESTDIR=${CROSSDIR} \
+@@ -321,8 +340,9 @@
+ 	done
+ 
+ cross-gnu:	${CROSSOBJ}
+-	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH}; \
+-	export MACHINE MACHINE_ARCH; \
++	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN}; \
++	export MACHINE MACHINE_ARCH MACHINE_ENDIAN; \
+ 	for i in gnu/lib gnu/usr.sbin gnu/usr.bin ; do \
+ 	(cd ${.CURDIR}/$$i; \
+ 	    eval ${CROSSENV} MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+@@ -334,8 +354,9 @@
+ 	done
+ 
+ cross-share:   ${CROSSOBJ}
+-	MACHINE=${TARGET} MACHINE_ARCH=`cat ${CROSSDIR}/TARGET_ARCH`; \
+-	export MACHINE MACHINE_ARCH; \
++	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN}; \
++	export MACHINE MACHINE_ARCH MACHINE_ENDIAN; \
+ 	for i in share; do \
+ 	    (cd ${.CURDIR}/$$i; \
+ 	        eval ${CROSSENV} MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+@@ -344,8 +365,9 @@
+ 	done
+ 
+ cross-sys:   ${CROSSOBJ}
+-	MACHINE=${TARGET} MACHINE_ARCH=`cat ${CROSSDIR}/TARGET_ARCH`; \
+-	export MACHINE MACHINE_ARCH; \
++	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN}; \
++	export MACHINE MACHINE_ARCH MACHINE_ENDIAN; \
+ 	for i in sys; do \
+ 	    (cd ${.CURDIR}/$$i; \
+ 	        eval ${CROSSENV} MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+@@ -356,7 +378,8 @@
+ cross-etc-root-var:	${CROSSOBJ}
+ 	(cd ${.CURDIR}/etc && \
+ 	    MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
+-	    DESTDIR=${CROSSDIR} ${MAKE} distribution-etc-root-var)
++	    MACHINE_ENDIAN=${TARGET_ENDIAN} DESTDIR=${CROSSDIR} \
++	    ${MAKE} distribution-etc-root-var)
+ 
+ cross-depend:
+ 	@(cd ${.CURDIR} && \
+@@ -378,3 +401,19 @@
+ 	    BSDSRCDIR=${.CURDIR} MAKEOBJDIR=obj.${MACHINE}.${TARGET} \
+ 	    SKIPDIR="${NO_CROSS}" \
+ 	    ${MAKE} cleandir)
++
++cross-kernel: ${CROSSGCC}
++	MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} \
++	    MACHINE_ENDIAN=${TARGET_ENDIAN}; \
++	export MACHINE MACHINE_ARCH MACHINE_ENDIAN; \
++	for i in GENERIC RAMDISK; do \
++	    (cd ${.CURDIR}/sys/arch/${TARGET}/conf && config $$i); \
++	    (cd ${.CURDIR}/sys/arch/${TARGET}/compile/$$i; \
++		touch newvers; \
++	        eval ${CROSSENV} ${MAKE} depend vers.o all); \
++	done
++
++cross-wrapper:
++	echo "#!/bin/sh" > $@
++	echo "TARGET=${TARGET} MACHINE=${TARGET} MACHINE_ARCH=${TARGET_ARCH} MACHINE_ENDIAN=${TARGET_ENDIAN} ${CROSSENV} \$$@" >> $@
++	chmod 755 $@
+diff -ur src.orig/gnu/usr.bin/binutils/Makefile.bsd-wrapper src/gnu/usr.bin/binutils/Makefile.bsd-wrapper
+--- src.orig/gnu/usr.bin/binutils/Makefile.bsd-wrapper	2010-01-11 23:13:01.000000000 +0900
++++ src/gnu/usr.bin/binutils/Makefile.bsd-wrapper	2010-01-11 23:41:09.000000000 +0900
+@@ -20,7 +20,7 @@
+ MANDIR=${PREFIX}/share/man/cat
+ .endif
+ 
+-MAN=		binutils/doc/objdump.1 c++filt.1
++MAN=		binutils/doc/objdump.1 binutils/doc/size.1 c++filt.1
+ 
+ CONF_SUBDIRS+=	gdb
+ SUBDIRS+=	gdb
+@@ -34,7 +34,7 @@
+ MAN+=		binutils/doc/addr2line.1 binutils/doc/ar.1 \
+ 		binutils/doc/objcopy.1 binutils/doc/ranlib.1 \
+ 		binutils/doc/readelf.1 binutils/doc/strings.1 \
+-		binutils/doc/strip.1 \
++		binutils/doc/strip.1 binutils/doc/size.1 \
+ 		gas/doc/as.1 ld/ld.1
+ .  else
+ CONF_SUBDIRS=${SUBDIRS}
+@@ -52,7 +52,7 @@
+ 
+ # cross-compilation
+ .if defined(TARGET_ARCH)
+-CONFIGTARGET=--target=${TARGET_ARCH}-unknown-openbsd${OSREV}
++CONFIGTARGET=--target=${TARGET_ARCH}${TARGET_ENDIAN}-unknown-openbsd${OSREV}
+ .else
+ CONFIGTARGET=
+ .endif
+@@ -73,7 +73,7 @@
+ .if ${USING_NEW_BINUTILS:L} != "yes"
+ 	cd ${.OBJDIR}/binutils && \
+ 	    ${MAKE} CC="${CC}" CFLAGS="${CFLAGS} ${COPTS}" \
+-	    LDFLAGS=${LDSTATIC} objdump
++	    LDFLAGS=${LDSTATIC} objdump size
+ .endif
+ 
+ .include <bsd.own.mk>
+@@ -85,7 +85,7 @@
+ .endif
+ 
+ do-config: .USE
+-	PATH="/bin:/usr/bin:/sbin:/usr/sbin" \
++	PATH="/usr/local/openbsd/bin:/bin:/usr/bin:/sbin:/usr/sbin" \
+ 	MAKEINFO='makeinfo --no-split' \
+ 	sh ${.CURDIR}/configure --prefix=${PREFIX} \
+ 	    --infodir='$${prefix}/share/info' \
+@@ -124,7 +124,7 @@
+ .if ${USING_NEW_BINUTILS:L} != "yes"
+ 	cd ${.OBJDIR}/binutils && \
+ 		${INSTALL} ${INSTALL_COPY} ${INSTALL_STRIP} -o ${BINOWN} \
+-		    -g ${BINGRP} -m ${BINMODE} objdump ${DESTDIR}${PREFIX}/bin
++		    -g ${BINGRP} -m ${BINMODE} objdump size ${DESTDIR}${PREFIX}/bin
+ .endif
+ 
+ clean cleandir:
+diff -ur src.orig/gnu/usr.bin/gcc/Makefile.bsd-wrapper src/gnu/usr.bin/gcc/Makefile.bsd-wrapper
+--- src.orig/gnu/usr.bin/gcc/Makefile.bsd-wrapper	2010-01-11 23:13:14.000000000 +0900
++++ src/gnu/usr.bin/gcc/Makefile.bsd-wrapper	2010-01-11 23:41:32.000000000 +0900
+@@ -47,26 +47,28 @@
+ 		genrtl.c genrtl.h fixinc.sh fixinc/Makefile \
+ 		po/Makefile  po/Makefile.in  po/POTFILES
+ 
+-GCCARCH=	${MACHINE_ARCH}-unknown-openbsd${OSREV}
+-GCCINC=	/usr/lib/gcc-lib/${GCCARCH}/$V/include
++#GCCARCH=	${MACHINE_ARCH}-unknown-openbsd${OSREV}
++#GCCINC=	/usr/lib/gcc-lib/${GCCARCH}/$V/include
++GCCARCH=	i386-interix
++GCCINC=		/usr/local/openbsd/lib/gcc/${GCCARCH}/$V/include
+ 
+ # cross-compilation
+ .if defined(CROSS_HOST) && defined(TARGET_ARCH) && defined(CROSSDIR)
+ CONFIGTARGET=	--build=${CROSS_HOST}-unknown-openbsd${OSREV} \
+-    --target=${TARGET_ARCH}-unknown-openbsd${OSREV}
++    --target=${TARGET_ARCH}${TARGET_ENDIAN}-unknown-openbsd${OSREV}
+ 
+ CONFIGPREFIX=	${CROSSDIR}/usr
+-PATH=		/bin:/usr/bin:/sbin:/usr/sbin:${CROSSDIR}/usr/bin
++PATH=		/usr/local/openbsd/bin:/bin:/usr/bin:/sbin:/usr/sbin:${CROSSDIR}/usr/bin
+ GXX_INCDIR=	${CROSSDIR}/usr/include/g++
+ GNUCFLAGS=	${CFLAGS} ${COPTS} -DOPENBSD_CROSS -I${LIBIBERTY_INCLUDES}
+ HOSTCFLAGS=	${CFLAGS} ${COPTS} -DOPENBSD_CROSS -I${LIBIBERTY_INCLUDES}
+ HOST_CC=cc
+ MAKE_FLAGS+= 	CFLAGS_FOR_BUILD="${HOSTCFLAGS}" HOST_CC=cc
+ .elif defined(TARGET_ARCH) && defined(CROSSDIR)
+-CONFIGTARGET=	--target=${TARGET_ARCH}-unknown-openbsd${OSREV}
++CONFIGTARGET=	--target=${TARGET_ARCH}${TARGET_ENDIAN}-unknown-openbsd${OSREV}
+ CONFIGPREFIX=	${CROSSDIR}/usr
+ MAKE_FLAGS+=	GCC_FOR_TARGET="./xgcc -B./ -I${CROSSDIR}/usr/include"
+-PATH=		/bin:/usr/bin:/sbin:/usr/sbin:${CROSSDIR}/usr/bin
++PATH=		/usr/local/openbsd/bin:/bin:/usr/bin:/sbin:/usr/sbin:${CROSSDIR}/usr/bin
+ GXX_INCDIR=	${CROSSDIR}/usr/include/g++
+ GNUCFLAGS=	${CFLAGS} ${COPTS} -DOPENBSD_CROSS -I${LIBIBERTY_INCLUDES}
+ VAXHOST_CFLAGS=	-DIN_GCC -DHAVE_CONFIG_H -O0
+diff -ur src.orig/include/Makefile src/include/Makefile
+--- src.orig/include/Makefile	2010-01-11 23:13:26.000000000 +0900
++++ src/include/Makefile	2010-01-11 22:11:27.000000000 +0900
+@@ -45,8 +45,8 @@
+ 	../lib/libskey ../lib/libsectok ../lib/libedit ../lib/libexpat \
+ 	../lib/libpcap ../lib/libutil ../lib/libusbhid ../lib/libwrap \
+ 	../lib/libz ../lib/libkeynote ../lib/libevent ../usr.bin/lex \
+-	../gnu/lib/libreadline ../gnu/usr.sbin/sendmail/libmilter \
+-	../sys/arch/${MACHINE}
++	../gnu/lib/libreadline ../gnu/usr.sbin/sendmail/libmilter
++#	../sys/arch/${MACHINE}
+ 
+ # Places using Makefile that needs a prerequisite target met before includes
+ PRDIRS=
