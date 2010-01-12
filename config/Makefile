@@ -7,7 +7,7 @@ SRCROOT = ..
 include $(SRCROOT)/config.mk
 
 CPPFLAGS += -Iinclude -D__BSD_VISIBLE=1
-LDFLAGS  += -lkvm -ldb
+LIBADD    = -lkvm -ldb
 
 all: $(TARGET)
 

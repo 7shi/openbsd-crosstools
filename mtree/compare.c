@@ -39,9 +39,11 @@
 #include <utime.h>
 #include <sys/time.h>
 #include <unistd.h>
+#if 0
 #include <md5.h>
 #include <sha1.h>
 #include <rmd160.h>
+#endif
 #include "mtree.h"
 #include "extern.h"
 

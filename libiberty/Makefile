@@ -10,7 +10,9 @@ src/Makefile:
 
 $(TARGET): src/Makefile
 	cd src && $(MAKE)
-	$(AR) cvrus $@ src/*.o ../libobcompat/mktemp.o
+	mkdir -p $(LIBDIR)
+	rm -f $@
+	$(AR) cvrus $@ src/*.o ../libobcompat/mktemp.o ../libobcompat/strlcpy.o
 
 install: $(TARGET)
 	mkdir -p $(PREFIX)/lib

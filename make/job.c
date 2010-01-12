@@ -70,6 +70,11 @@
  *	Job_Wait		Wait for all running jobs to finish.
  */
 
+#include <sys/select.h>
+#ifndef NFDBITS
+#define NFDBITS __NFDBITS
+#endif
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #define WAIT_ANY (-1)
@@ -83,6 +88,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include "config.h"
 #include "defines.h"
 #include "job.h"

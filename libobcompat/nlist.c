@@ -43,6 +43,10 @@
 
 #include <elf_abi.h>
 
+#ifndef SIZE_T_MAX
+#define SIZE_T_MAX UINT_MAX
+#endif
+
 int	__fdnlist(int, struct nlist *);
 int	__elf_fdnlist(int, struct nlist *);
 #ifdef _NLIST_DO_ELF

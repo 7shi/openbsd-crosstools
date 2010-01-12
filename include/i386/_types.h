@@ -74,7 +74,9 @@ typedef	__int64_t		__int_fast64_t;
 typedef	__uint64_t		__uint_fast64_t;
 
 /* 7.18.1.4 Integer types capable of holding object pointers */
+#ifdef __INTERIX
 typedef	long			__intptr_t;
+#endif
 typedef	unsigned long		__uintptr_t;
 
 /* 7.18.1.5 Greatest-width integer types */
@@ -91,15 +93,21 @@ typedef unsigned long		__vsize_t;
 typedef unsigned long		__psize_t;
 
 /* Standard system types */
+#ifdef __INTERIX
 typedef int			__clock_t;
+#endif
 typedef int			__clockid_t;
 typedef long double		__double_t;
 typedef long double		__float_t;
+#ifdef __INTERIX
 typedef long long		__off_t;
+#endif
 typedef long			__ptrdiff_t;
 typedef	unsigned long		__size_t;
+#ifdef __INTERIX
 typedef	long			__ssize_t;
 typedef	int			__time_t;
+#endif
 typedef int			__timer_t;
 #if defined(__GNUC__) && __GNUC__ >= 3
 typedef	__builtin_va_list	__va_list;

@@ -14,6 +14,7 @@ OBJECTS = $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJECTS)
 	mkdir -p $(LIBDIR)
+	rm -f $@
 	$(AR) cvrus $@ $(OBJECTS)
 
 .c.o:

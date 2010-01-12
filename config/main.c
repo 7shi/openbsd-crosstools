@@ -99,6 +99,11 @@ main(int argc, char *argv[])
 	char *outfile = NULL;
 	int pflag, ch, eflag, uflag, fflag;
 
+#if 1
+	extern void obcompat_init();
+	obcompat_init();
+#endif
+	
 	pflag = eflag = uflag = fflag = 0;
 	while ((ch = getopt(argc, argv, "egpfb:s:o:u")) != -1) {
 		switch (ch) {

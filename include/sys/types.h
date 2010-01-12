@@ -218,8 +218,17 @@ __END_DECLS
 
 #if __BSD_VISIBLE
 /* Major, minor numbers, dev_t's. */
+#ifdef major
+#undef major
+#endif
 #define	major(x)	((int32_t)(((u_int32_t)(x) >> 8) & 0xff))
+#ifdef minor
+#undef minor
+#endif
 #define	minor(x)	((int32_t)((x) & 0xff) | (((x) & 0xffff0000) >> 8))
+#ifdef makedev
+#undef makedev
+#endif
 #define	makedev(x,y)	((dev_t)((((x) & 0xff) << 8) | ((y) & 0xff) | (((y) & 0xffff00) << 8)))
 #endif
 #endif

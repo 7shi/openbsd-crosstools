@@ -33,6 +33,7 @@
 #ifndef _SYS_EXEC_ELF_H_
 #define _SYS_EXEC_ELF_H_
 
+#include <stdint.h>
 #include <machine/_types.h>
 #include <machine/exec.h>
 

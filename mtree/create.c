@@ -43,9 +43,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <vis.h>
+#if 0
 #include <md5.h>
 #include <sha1.h>
 #include <rmd160.h>
+#endif
+#ifdef _BSD_SOURCE
+#include <rpc/types.h>
+#endif
 #include "mtree.h"
 #include "extern.h"
 

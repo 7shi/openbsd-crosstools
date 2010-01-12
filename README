@@ -1,1 +1,5 @@
 OpenBSD Cross Build Tools
+
+Please edit "config.mk" and "make install".
+
+Supported: Interix, Hurd

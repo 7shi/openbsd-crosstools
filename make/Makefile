@@ -29,7 +29,7 @@ $(TARGET): $(HEADERS) $(OBJECTS)
 	$(CC) -c -o $@ $(CPPFLAGS) $<
 
 generate: generate.c stats.c memory.c
-	$(CC) -o $@ $(CPPFLAGS) $<
+	$(CC) -o $@ $(CPPFLAGS) $< $(LDFLAGS)
 
 varhashconsts.h: generate
 	./generate 1 77 > $@
